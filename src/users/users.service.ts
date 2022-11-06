@@ -30,6 +30,10 @@ export class UsersService {
     return user;
   }
 
+  async getUserInfo(user: User) {
+    return await this.findOneByEmail(user.email);
+  }
+
   findAll() {
     return `This action returns all users`;
   }
