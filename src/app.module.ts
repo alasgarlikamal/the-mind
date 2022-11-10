@@ -7,6 +7,7 @@ import { config } from './config/config';
 import { DatabaseConfig } from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { AvatarsModule } from './avatars/avatars.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { AuthModule } from './auth/auth.module';
     useClass: DatabaseConfig
   }),
   UsersModule,
-  AuthModule],
+  AuthModule,
+  AvatarsModule],
   controllers: [AppController],
   providers: [AppService],
 })
