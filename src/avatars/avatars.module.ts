@@ -8,5 +8,6 @@ import { Avatar } from './entities/avatar.entity';
   imports: [TypeOrmModule.forFeature([Avatar])],
   controllers: [AvatarsController],
   providers: [AvatarsService],
+  exports: [AvatarsService]
 })
 export class AvatarsModule {}

@@ -1,5 +1,11 @@
-import { BadRequestException, Injectable, MethodNotAllowedException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  MethodNotAllowedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { AvatarsService } from 'src/avatars/avatars.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,15 +13,28 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectRepository(User) private usersRepository: Repository<User>,
+    private readonly avatarsService: AvatarsService,
+  ) {}
 
-  constructor(@InjectRepository(User) private usersRepository: Repository<User>) {}
-  
   async create(createUserDto: CreateUserDto) {
-    const userFound = await this.usersRepository.findOneBy({ email: createUserDto.email });
+    const userFound = await this.usersRepository.findOneBy({
+      email: createUserDto.email,
+    });
 
-    if (userFound) throw new MethodNotAllowedException(`User with email ${createUserDto.email} is already registered`);
+    const avatar = await this.avatarsService.findOne(createUserDto.avatarId);
 
-    const user = this.usersRepository.create({...createUserDto, username: createUserDto.email});
+    if (userFound)
+      throw new MethodNotAllowedException(
+        `User with email ${createUserDto.email} is already registered`,
+      );
+
+    const user = this.usersRepository.create({
+      ...createUserDto,
+      username: createUserDto.email,
+      avatar,
+    });
 
     if (!user) throw new BadRequestException('User could not be created');
 
@@ -25,7 +44,8 @@ export class UsersService {
   async findOneByEmail(email: string) {
     const user = await this.usersRepository.findOneBy({ email });
 
-    if (!user) throw new NotFoundException(`User with email ${email} was not found`);
+    if (!user)
+      throw new NotFoundException(`User with email ${email} was not found`);
 
     return user;
   }

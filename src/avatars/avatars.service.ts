@@ -1,26 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateAvatarDto } from './dto/create-avatar.dto';
 import { UpdateAvatarDto } from './dto/update-avatar.dto';
+import { Avatar } from './entities/avatar.entity';
 
 @Injectable()
 export class AvatarsService {
-  create(createAvatarDto: CreateAvatarDto) {
-    return 'This action adds a new avatar';
+  constructor(@InjectRepository(Avatar) private repo: Repository<Avatar>) {}
+
+  async findAll() {
+    const avatars = await this.repo.find();
+    if (avatars.length === 0) throw new NotFoundException('Avatars not found');
+    return avatars;
   }
 
-  findAll() {
-    return `This action returns all avatars`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} avatar`;
-  }
-
-  update(id: number, updateAvatarDto: UpdateAvatarDto) {
-    return `This action updates a #${id} avatar`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} avatar`;
+  async findOne(id: number) {
+    const avatar = await this.repo.findOneBy({ id });
+    if (!avatar) throw new NotFoundException('Avatar not found!');
+    return avatar;
   }
 }
