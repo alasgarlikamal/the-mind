@@ -1,10 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -17,7 +27,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/me')
-  getUserInfo(@GetUser() user: User){
+  getUserInfo(@GetUser() user: User) {
     return this.usersService.getUserInfo(user);
   }
 
@@ -31,9 +41,19 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @UseGuards(JwtAuthGuard)
+  @Patch('/update-user')
+  updateUserInfo(@GetUser() user: User, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUserInfo(user, updateUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/reset-password')
+  resetPassword(
+    @GetUser() user: User,
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ) {
+    return this.usersService.resetPassword(user, resetPasswordDto);
   }
 
   @Delete(':id')
