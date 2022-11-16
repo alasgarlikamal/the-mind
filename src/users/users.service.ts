@@ -3,13 +3,17 @@ import {
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AvatarsService } from 'src/avatars/avatars.service';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -66,7 +70,28 @@ export class UsersService {
     return `This action updates a #${id} user`;
   }
 
+  async updateUserInfo(user: User, updateUserDto: UpdateUserDto) {
+    const userFound = await this.findOneByEmail(user.email);
+
+    Object.assign(userFound, updateUserDto);
+
+    return await this.usersRepository.save(userFound);
+  }
+
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async resetPassword(user: User, resetPasswordDto: ResetPasswordDto) {
+    const userFound = await this.findOneByEmail(user.email);
+    const isMatch = await bcrypt.compare(
+      resetPasswordDto.password,
+      userFound.password,
+    );
+    if (isMatch)
+      throw new ConflictException("New password can't be same as old password");
+    const salt = await bcrypt.genSalt();
+    userFound.password = await bcrypt.hash(resetPasswordDto.password, salt);
+    return await this.usersRepository.save(userFound);
   }
 }

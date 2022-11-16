@@ -7,6 +7,7 @@ import {
   IsNumber,
   IsString,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 import { Avatar } from 'src/avatars/entities/avatar.entity';
 
@@ -29,6 +30,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(1024)
+  @MinLength(8)
   password: string;
 
   @IsDateString()
