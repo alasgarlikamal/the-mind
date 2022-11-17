@@ -8,6 +8,7 @@ import { DatabaseConfig } from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AvatarsModule } from './avatars/avatars.module';
+import { AboutModule } from './about/about.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { AvatarsModule } from './avatars/avatars.module';
   }),
   UsersModule,
   AuthModule,
-  AvatarsModule],
+  AvatarsModule,
+  AboutModule],
   controllers: [AppController],
   providers: [AppService],
 })
