@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 
@@ -10,5 +11,22 @@ export class AuthController {
   create(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
+
+  @Post('/register')
+  register(@Body() createUserDto: CreateUserDto){
+    return this.authService.register(createUserDto);
+  }
+
+  @Get('confirm-email/:token')
+  async confirmEmail(@Param('token') token: string){
+    try {
+      await this.authService.confirmMail(token);
+      return "success!";
+      
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
 }

@@ -5,12 +5,18 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfirmToken } from './entities/confirmToken.entity';
+import { MailModule } from 'src/mail/mail.module';
+import { User } from 'src/users/entities/user.entity';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
   imports: [
     UsersModule, 
+    MailModule,
+    TypeOrmModule.forFeature([ConfirmToken, User]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

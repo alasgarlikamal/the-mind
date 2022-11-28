@@ -11,5 +11,11 @@ export const config = () => ({
         entities,
         synchronize: true
     },
-    jwtSecret: process.env.JWT_SECRET
+    jwtSecret: process.env.JWT_SECRET,
+
+    mailHost: process.env.MAIL_HOST,
+    mailPassword: process.env.MAIL_PASSWORD,
+    mailUser: process.env.MAIL_USER ,
+    mailFrom: process.env.MAIL_FROM
+
 })

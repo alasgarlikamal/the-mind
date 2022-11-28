@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +9,9 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AvatarsModule } from './avatars/avatars.module';
 import { AboutModule } from './about/about.module';
+import { MailModule } from './mail/mail.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+
 
 @Module({
   imports: [
@@ -21,10 +24,24 @@ import { AboutModule } from './about/about.module';
     imports: [ConfigModule],
     useClass: DatabaseConfig
   }),
+  MailerModule.forRootAsync({
+    imports: [ConfigModule],
+    useFactory: (configService: ConfigService) => ({
+      transport: {
+        host: configService.get("mailHost"),
+        auth: {
+          user: configService.get("mailUser"),
+          pass: configService.get("mailPassword")
+        }
+      },
+    }),
+    inject: [ConfigService]
+  }),
   UsersModule,
   AuthModule,
   AvatarsModule,
-  AboutModule],
+  AboutModule,
+  MailModule],
   controllers: [AppController],
   providers: [AppService],
 })

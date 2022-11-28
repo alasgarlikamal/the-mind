@@ -56,6 +56,9 @@ export class User {
   @JoinColumn()
   avatar: Avatar;
 
+  @Column({type: 'boolean', default: false})
+  isActive: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 
