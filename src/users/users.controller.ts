@@ -47,15 +47,6 @@ export class UsersController {
     return this.usersService.updateUserInfo(user, updateUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/reset-password')
-  resetPassword(
-    @GetUser() user: User,
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
-    return this.usersService.resetPassword(user, resetPasswordDto);
-  }
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
