@@ -20,11 +20,6 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('/register')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   getUserInfo(@GetUser() user: User) {
@@ -45,15 +40,6 @@ export class UsersController {
   @Patch('/update-user')
   updateUserInfo(@GetUser() user: User, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUserInfo(user, updateUserDto);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('/reset-password')
-  resetPassword(
-    @GetUser() user: User,
-    @Body() resetPasswordDto: ResetPasswordDto,
-  ) {
-    return this.usersService.resetPassword(user, resetPasswordDto);
   }
 
   @Delete(':id')
