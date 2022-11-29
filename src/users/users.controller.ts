@@ -20,11 +20,6 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('/register')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('/me')
   getUserInfo(@GetUser() user: User) {
