@@ -10,8 +10,8 @@ export const config = () => ({
         database: process.env.DB_DATABASE,
         entities,
         synchronize: true,
-        seeds: ['src/database/seeds/**/*{.ts,.js}'],
-        factories: ['src/database/factories/**/*{.ts,.js}'],
+        seeds: ["src/db/seeding/seeds/**/*{.ts,.js}"],
+        factories: ["src/db/seeding/factories/**/*{.ts,.js}"],
     },
     jwtSecret: process.env.JWT_SECRET,
 
