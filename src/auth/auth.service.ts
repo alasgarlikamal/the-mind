@@ -12,12 +12,12 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import { v4 } from 'uuid';
-import { ConfirmToken } from './entities/confirmToken.entity';
+import { ConfirmMailToken } from './entities/confirmMailToken.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/mail/mail.service';
 import { ResetPasswordDto } from 'src/users/dto/reset-password.dto';
-import { ConfirmTokenPwd } from './entities/confirmTokenPwd.entity';
+import { ConfirmPasswordToken } from './entities/confirmPasswordToken.entity';
 
 @Injectable()
 export class AuthService {
@@ -26,10 +26,10 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
     @InjectRepository(User) private usersRepository: Repository<User>,
-    @InjectRepository(ConfirmToken)
-    private confirmTokenRepository: Repository<ConfirmToken>,
-    @InjectRepository(ConfirmTokenPwd)
-    private confirmTokenPwdRepository: Repository<ConfirmTokenPwd>,
+    @InjectRepository(ConfirmMailToken)
+    private confirmMailTokenRepository: Repository<ConfirmMailToken>,
+    @InjectRepository(ConfirmPasswordToken)
+    private confirmPasswordTokenRepository: Repository<ConfirmPasswordToken>,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -53,7 +53,7 @@ export class AuthService {
     try {
       const user = await this.usersService.create(createUserDto);
 
-      const confirmToken = await this.createConfirmToken(user);
+      const confirmToken = await this.createMailConfirmToken(user);
 
       return await this.mailService.sendEmailConfirmationMail({
         email: user.email,
@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   async confirmMail(token: string) {
-    const confirmationToken = await this.confirmTokenRepository.findOne({
+    const confirmationToken = await this.confirmMailTokenRepository.findOne({
       where: { token },
       relations: {
         user: true,
@@ -84,7 +84,7 @@ export class AuthService {
       throw new BadRequestException('Could not confirm user');
 
     const options = { token, user: confirmationToken.user } as unknown;
-    const deleteResult: DeleteResult = await this.confirmTokenRepository.delete(
+    const deleteResult: DeleteResult = await this.confirmMailTokenRepository.delete(
       options,
     );
     if (deleteResult && deleteResult.affected === 0)
@@ -98,27 +98,27 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  async createConfirmToken(user: User) {
+  async createMailConfirmToken(user: User) {
     const token: string = v4();
-    const confirmationToken = this.confirmTokenRepository.create({
+    const confirmationToken = this.confirmMailTokenRepository.create({
       token,
       user,
     });
     if (!confirmationToken)
       throw new BadRequestException('Could not create a confirmation token');
-    return await this.confirmTokenRepository.save(confirmationToken);
+    return await this.confirmMailTokenRepository.save(confirmationToken);
   }
 
   async createPasswordConfirmToken(user: User, password: string) {
     const token: string = v4();
-    const confirmationToken = this.confirmTokenPwdRepository.create({
+    const confirmationToken = this.confirmPasswordTokenRepository.create({
       token,
       user,
       password,
     });
     if (!confirmationToken)
       throw new BadRequestException('Could not create a confirmation token');
-    return await this.confirmTokenPwdRepository.save(confirmationToken);
+    return await this.confirmPasswordTokenRepository.save(confirmationToken);
   }
 
   async resetPassword(user: User, resetPasswordDto: ResetPasswordDto) {
@@ -148,7 +148,7 @@ export class AuthService {
   }
 
   async confirmPassword(token: string) {
-    const confirmationToken = await this.confirmTokenPwdRepository.findOne({
+    const confirmationToken = await this.confirmPasswordTokenRepository.findOne({
       where: { token },
       relations: {
         user: true,

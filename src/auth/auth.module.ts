@@ -6,10 +6,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfirmToken } from './entities/confirmToken.entity';
+import { ConfirmMailToken } from './entities/confirmMailToken.entity';
 import { MailModule } from 'src/mail/mail.module';
 import { User } from 'src/users/entities/user.entity';
-import { ConfirmTokenPwd } from './entities/confirmTokenPwd.entity';
+import { ConfirmPasswordToken } from './entities/confirmPasswordToken.entity';
 
 @Module({
   controllers: [AuthController],
@@ -17,7 +17,7 @@ import { ConfirmTokenPwd } from './entities/confirmTokenPwd.entity';
   imports: [
     UsersModule,
     MailModule,
-    TypeOrmModule.forFeature([ConfirmToken, User, ConfirmTokenPwd]),
+    TypeOrmModule.forFeature([ConfirmMailToken, User, ConfirmPasswordToken]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
