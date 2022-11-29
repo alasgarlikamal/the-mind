@@ -10,8 +10,6 @@ export const config = () => ({
         database: process.env.DB_DATABASE,
         entities,
         synchronize: true,
-        seeds: ["src/db/seeding/seeds/**/*{.ts,.js}"],
-        factories: ["src/db/seeding/factories/**/*{.ts,.js}"],
     },
     jwtSecret: process.env.JWT_SECRET,
 
@@ -20,5 +18,4 @@ export const config = () => ({
     mailUser: process.env.MAIL_USER ,
     mailFrom: process.env.MAIL_FROM,
    
-
 })
