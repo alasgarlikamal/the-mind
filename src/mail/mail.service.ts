@@ -11,8 +11,8 @@ export class MailService {
   ) {}
 
   async sendEmailConfirmationMail(createConfirmMailDto: CreateConfirmMailDto) {
-    const url =
-      process.env.EMAIL_CONFIRMATION_URL + '/' + createConfirmMailDto.token;
+    const url =this.configService.get('emailConfirmUrl') + createConfirmMailDto.token;
+
     const text = `Hello ${createConfirmMailDto.firstName} ! <br/> \
                     We got a registration request from you. If you did not \
                     pass any registration stage on our page, please simply ignore this message. <br/> \
@@ -27,8 +27,8 @@ export class MailService {
     });
   }
   async sendResetPasswordMail(createConfirmMailDto: CreateConfirmMailDto) {
-    const url =
-      process.env.RESET_PASSWORD_URL + '/' + createConfirmMailDto.token;
+    
+    const url = this.configService.get('passwordConfirmUrl') + createConfirmMailDto.token;
     const text = `Hello ${createConfirmMailDto.firstName} ! <br/> \
                     We got a reset password request from you. <br/> \
                     Follow this link to confirm your email: <br/>
