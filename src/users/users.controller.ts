@@ -15,7 +15,9 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

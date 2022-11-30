@@ -8,8 +8,10 @@ import {
   Delete,
   ParseIntPipe,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AvatarsService } from './avatars.service';
 
+@ApiTags('Avatars')
 @Controller('avatars')
 export class AvatarsController {
   constructor(private readonly avatarsService: AvatarsService) {}
