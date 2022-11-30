@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
     IsString,
     IsNotEmpty,
@@ -9,15 +9,18 @@ import {
 import { CreateAboutDto } from './create-about.dto';
     
 export class UpdateAboutDto extends PartialType(CreateAboutDto){
-    @ApiProperty({ description: 'Creator full name', example: 'Kamal Alasgarli' })
+    @ApiProperty({ description: 'Developer full name', example: 'Kamal Alasgarli' })
+    @ApiPropertyOptional()
     @IsOptional()
     fullName?: string;
 
-    @ApiProperty({ description: 'Creator role', example: 'Team Lead/Backend Developer' })
+    @ApiProperty({ description: 'Developer role', example: 'Team Lead/Backend Developer' })
+    @ApiPropertyOptional()
     @IsOptional()
     role?: string;
 
     @ApiProperty({ description: 'Additional text', example: 'NestJs, Redis'})
+    @ApiPropertyOptional()
     @IsOptional()
     text?: string;
 }

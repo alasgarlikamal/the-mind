@@ -18,33 +18,33 @@ export class AboutService {
     }
 
     async create(createAboutDto: CreateAboutDto) {
-        const creator = this.aboutRepository.create(createAboutDto);
+        const developer = this.aboutRepository.create(createAboutDto);
 
-        if (!creator) throw new BadRequestException('Failed to create');
+        if (!developer) throw new BadRequestException('Failed to create');
 
-        return await this.aboutRepository.save(creator);
+        return await this.aboutRepository.save(developer);
     }
 
     async findOneById(id:number){
-        const creator = await this.aboutRepository.findOneBy({ id });
+        const developer = await this.aboutRepository.findOneBy({ id });
 
-        if(!creator) throw new NotFoundException(`Creator with id ${id} not found`);
+        if(!developer) throw new NotFoundException(`Developer with id ${id} not found`);
         
-        return creator;
+        return developer;
     }
 
     async update(id: number, updateAboutDto:UpdateAboutDto) {
-        const creator = await this.findOneById(id);
+        const developer = await this.findOneById(id);
         
-        Object.assign(creator, updateAboutDto);
+        Object.assign(developer, updateAboutDto);
 
-        return await this.aboutRepository.save(creator);
+        return await this.aboutRepository.save(developer);
     }
 
     async remove(id: number) {
-        const creator = await this.findOneById(id);
+        const developer = await this.findOneById(id);
 
-        return await this.aboutRepository.remove(creator);
+        return await this.aboutRepository.remove(developer);
     }
 
 }
