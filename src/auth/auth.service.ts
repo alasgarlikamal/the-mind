@@ -165,4 +165,8 @@ export class AuthService {
       { password: confirmationToken.password },
     );
   }
+
+  validateWs(token: string) {
+    console.log(this.jwtService.verify(token))
+  }
 }

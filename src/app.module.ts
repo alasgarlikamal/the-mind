@@ -11,6 +11,7 @@ import { AvatarsModule } from './avatars/avatars.module';
 import { AboutModule } from './about/about.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { SocketsModule } from './sockets/sockets.module';
 
 
 @Module({
@@ -41,7 +42,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
   AuthModule,
   AvatarsModule,
   AboutModule,
-  MailModule],
+  MailModule,
+  SocketsModule],
   controllers: [AppController],
   providers: [AppService],
 })

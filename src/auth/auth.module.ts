@@ -14,6 +14,7 @@ import { ConfirmPasswordToken } from './entities/confirmPasswordToken.entity';
 @Module({
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
   imports: [
     UsersModule,
     MailModule,
