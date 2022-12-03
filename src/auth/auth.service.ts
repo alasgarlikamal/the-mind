@@ -166,7 +166,16 @@ export class AuthService {
     );
   }
 
-  validateWs(token: string) {
-    console.log(this.jwtService.verify(token))
+  async validateWs(token: string) {
+
+    try {
+      await this.jwtService.verifyAsync(token)
+      const data = this.jwtService.decode(token);
+      console.log(data);
+      return true;
+      
+    } catch (error) {
+      return false;
+    }
   }
 }

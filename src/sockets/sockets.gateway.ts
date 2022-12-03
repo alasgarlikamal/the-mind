@@ -2,21 +2,22 @@ import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, OnGat
 import { SocketsService } from './sockets.service';
 import { CreateSocketDto } from './dto/create-socket.dto';
 import { UpdateSocketDto } from './dto/update-socket.dto';
-import { OnModuleInit } from '@nestjs/common';
+import { ForbiddenException, OnModuleInit } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
 
 @WebSocketGateway({ cors: {origin: '*'}})
-export class SocketsGateway implements OnModuleInit, OnGatewayDisconnect, OnGatewayConnection{
+export class SocketsGateway implements OnGatewayDisconnect, OnGatewayConnection{
   constructor(
     private readonly socketsService: SocketsService,
     private authService: AuthService) {}
 
   async handleConnection(socket: Socket, ...args: any[]) {
     const auth = socket.handshake.headers.authorization;
-    this.authService.validateWs(auth);
-    // const verify = await this.jwtService.verifyAsync(auth)
-    console.log(socket);
+    if(!await this.authService.validateWs(auth)){
+      socket.disconnect();
+      return;
+    } 
     console.log(`Server: Connected to id: ${socket.id}`, auth);
   }
   handleDisconnect(socket: Socket) {
@@ -25,10 +26,6 @@ export class SocketsGateway implements OnModuleInit, OnGatewayDisconnect, OnGate
 
   @WebSocketServer()
   server: Server;
-
-  onModuleInit() {
-    
-  }
 
   @SubscribeMessage('createSocket')
   create(@MessageBody() createSocketDto: CreateSocketDto) {
@@ -55,3 +52,4 @@ export class SocketsGateway implements OnModuleInit, OnGatewayDisconnect, OnGate
     return this.socketsService.remove(id);
   }
 }
+ 
