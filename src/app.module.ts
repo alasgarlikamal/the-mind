@@ -12,6 +12,7 @@ import { AboutModule } from './about/about.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { SocketsModule } from './sockets/sockets.module';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 
 @Module({
@@ -38,6 +39,16 @@ import { SocketsModule } from './sockets/sockets.module';
     }),
     inject: [ConfigService]
   }),
+  RedisModule.forRootAsync({
+    useFactory: () => {
+      return {
+        config: {
+          host: 'localhost',
+          port: 6379
+        }
+      };
+    }
+  })
   UsersModule,
   AuthModule,
   AvatarsModule,
