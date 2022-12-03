@@ -40,15 +40,12 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
     inject: [ConfigService]
   }),
   RedisModule.forRootAsync({
-    useFactory: () => {
+    useFactory: (configService: ConfigService) => {
       return {
-        config: {
-          host: 'localhost',
-          port: 6379
-        }
+        config: configService.get('redis')
       };
     }
-  })
+  }),
   UsersModule,
   AuthModule,
   AvatarsModule,

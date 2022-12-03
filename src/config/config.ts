@@ -11,6 +11,12 @@ export const config = () => ({
         entities,
         synchronize: true,
     },
+
+    redis: {
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT
+    },
+
     jwtSecret: process.env.JWT_SECRET,
 
     mailHost: process.env.MAIL_HOST,
