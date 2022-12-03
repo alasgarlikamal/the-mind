@@ -40,11 +40,13 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
     inject: [ConfigService]
   }),
   RedisModule.forRootAsync({
+    imports: [ConfigModule],
     useFactory: (configService: ConfigService) => {
       return {
         config: configService.get('redis')
       };
-    }
+    },
+    inject: [ConfigService]
   }),
   UsersModule,
   AuthModule,
