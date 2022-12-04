@@ -1,7 +1,5 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, OnGatewayDisconnect, OnGatewayConnection } from '@nestjs/websockets';
+import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, OnGatewayDisconnect, OnGatewayConnection, ConnectedSocket } from '@nestjs/websockets';
 import { SocketsService } from './sockets.service';
-import { CreateSocketDto } from './dto/create-socket.dto';
-import { UpdateSocketDto } from './dto/update-socket.dto';
 import { ForbiddenException, OnModuleInit } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 import { AuthService } from 'src/auth/auth.service';
@@ -27,29 +25,10 @@ export class SocketsGateway implements OnGatewayDisconnect, OnGatewayConnection{
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('createSocket')
-  create(@MessageBody() createSocketDto: CreateSocketDto) {
-    return this.socketsService.create(createSocketDto);
+  @SubscribeMessage('createRoom')
+  async create(@ConnectedSocket() socket: Socket) {
+    return await this.socketsService.createRoom(socket);
   }
 
-  @SubscribeMessage('findAllSockets')
-  findAll() {
-    return this.socketsService.findAll();
-  }
-
-  @SubscribeMessage('findOneSocket')
-  findOne(@MessageBody() id: number) {
-    return this.socketsService.findOne(id);
-  }
-
-  @SubscribeMessage('updateSocket')
-  update(@MessageBody() updateSocketDto: UpdateSocketDto) {
-    return this.socketsService.update(updateSocketDto.id, updateSocketDto);
-  }
-
-  @SubscribeMessage('removeSocket')
-  remove(@MessageBody() id: number) {
-    return this.socketsService.remove(id);
-  }
 }
  
