@@ -1,5 +1,6 @@
 export type Room = {
     id: string;
+    admin: string;
     joinedPlayers: string[];
     readyPlayers: string[];
 }
