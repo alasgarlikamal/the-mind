@@ -7,10 +7,9 @@ async function bootstrap() {
   const PORT: number = parseInt(process.env.PORT) || 3000;
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('TheMind')
-    .setDescription('TheMind API description')
+    .setTitle('The Mind')
+    .setDescription('The Mind API description')
     .setVersion('1.0')
-    .addTag('themind')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
