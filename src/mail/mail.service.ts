@@ -11,34 +11,31 @@ export class MailService {
   ) {}
 
   async sendEmailConfirmationMail(createConfirmMailDto: CreateConfirmMailDto) {
-    const url =
+    const email_url =
       process.env.EMAIL_CONFIRMATION_URL + '/' + createConfirmMailDto.token;
-    const text = `Hello ${createConfirmMailDto.firstName} ! <br/> \
-                    We got a registration request from you. If you did not \
-                    pass any registration stage on our page, please simply ignore this message. <br/> \
-                    Follow this link to confirm your email: <br/>
-                    <a href="${url}"> Click me! </a>`;
-
     return await this.mailerService.sendMail({
       to: createConfirmMailDto.email,
       from: this.configService.get('mailFrom'),
       subject: 'Email confirmation',
-      text,
+      template: 'email',
+      context: {
+        email_name: createConfirmMailDto.firstName,
+        email_url,
+      },
     });
   }
   async sendResetPasswordMail(createConfirmMailDto: CreateConfirmMailDto) {
-    const url =
+    const password_url =
       process.env.RESET_PASSWORD_URL + '/' + createConfirmMailDto.token;
-    const text = `Hello ${createConfirmMailDto.firstName} ! <br/> \
-                    We got a reset password request from you. <br/> \
-                    Follow this link to confirm your email: <br/>
-                    <a href="${url}"> Click me! </a>`;
-
     return await this.mailerService.sendMail({
       to: createConfirmMailDto.email,
       from: this.configService.get('mailFrom'),
       subject: 'Reset password',
-      text,
+      template: 'password',
+      context: {
+        password_name: createConfirmMailDto.firstName,
+        password_url,
+      },
     });
   }
 }

@@ -9,37 +9,46 @@ import { AvatarsModule } from './avatars/avatars.module';
 import { AboutModule } from './about/about.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { join } from 'path';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-    isGlobal: true,
-    load: [config],
-    envFilePath: `.env.${process.env.NODE_ENV}`
-  }),
-  TypeOrmModule.forRootAsync({
-    imports: [ConfigModule],
-    useClass: DatabaseConfig
-  }),
-  MailerModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => ({
-      transport: {
-        host: configService.get("mailHost"),
-        auth: {
-          user: configService.get("mailUser"),
-          pass: configService.get("mailPassword")
-        }
-      },
+      isGlobal: true,
+      load: [config],
+      envFilePath: `.env.${process.env.NODE_ENV}`,
     }),
-    inject: [ConfigService]
-  }),
-  UsersModule,
-  AuthModule,
-  AvatarsModule,
-  AboutModule,
-  MailModule],
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: DatabaseConfig,
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('mailHost'),
+          auth: {
+            user: configService.get('mailUser'),
+            pass: configService.get('mailPassword'),
+          },
+        },
+        template: {
+          dir: join(__dirname, '../src/templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
+    UsersModule,
+    AuthModule,
+    AvatarsModule,
+    AboutModule,
+    MailModule,
+  ],
   controllers: [],
   providers: [],
 })
