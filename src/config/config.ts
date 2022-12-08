@@ -17,5 +17,8 @@ export const config = () => ({
     mailPassword: process.env.MAIL_PASSWORD,
     mailUser: process.env.MAIL_USER ,
     mailFrom: process.env.MAIL_FROM,
+
+    emailConfirmUrl: process.env.EMAIL_CONFIRMATION_URL,
+    passwordConfirmUrl: process.env.PASSWORD_CONFIRMATION_URL
    
 })

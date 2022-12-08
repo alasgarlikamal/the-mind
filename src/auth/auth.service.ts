@@ -123,7 +123,6 @@ export class AuthService {
 
   async resetPassword(user: User, resetPasswordDto: ResetPasswordDto) {
     const userFound = await this.usersService.findOneByEmail(user.email);
-    console.log(userFound.password);
     const isMatch = await bcrypt.compare(
       resetPasswordDto.password,
       userFound.password,
@@ -131,20 +130,16 @@ export class AuthService {
     if (isMatch)
       throw new ConflictException("New password can't be same as old password");
     const salt = await bcrypt.genSalt();
-    userFound.password = await bcrypt.hash(resetPasswordDto.password, salt);
+    const newPassword = await bcrypt.hash(resetPasswordDto.password, salt);
     const confirmToken = await this.createPasswordConfirmToken(
       user,
-      userFound.password,
+      newPassword,
     );
-    console.log(userFound.password);
     return await this.mailService.sendResetPasswordMail({
       email: user.email,
       firstName: user.firstname,
       token: confirmToken.token,
     });
-  }
-  catch(error) {
-    throw error;
   }
 
   async confirmPassword(token: string) {
@@ -159,7 +154,7 @@ export class AuthService {
     const userFound = await this.usersService.findOneByEmail(
       confirmationToken.user.email,
     );
-    console.log(confirmationToken.password);
+    await this.confirmPasswordTokenRepository.remove(confirmationToken);
     return await this.usersRepository.update(
       { id: userFound.id },
       { password: confirmationToken.password },
