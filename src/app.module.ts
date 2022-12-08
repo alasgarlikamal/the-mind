@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { config } from './config/config';
 import { DatabaseConfig } from './config/database.config';
 import { UsersModule } from './users/users.module';
@@ -42,7 +40,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
   AvatarsModule,
   AboutModule,
   MailModule],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
