@@ -15,3 +15,5 @@ async function bootstrap(){
     }).catch(error => { throw error});
 }
 bootstrap();
+
+export default bootstrap;
