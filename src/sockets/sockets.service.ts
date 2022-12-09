@@ -1,6 +1,6 @@
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Redis } from 'ioredis';
+import Redis  from 'ioredis';
 import { Socket } from 'socket.io';
 import { v4 } from 'uuid';
 import { RoomDto } from './dto/room.dto';
@@ -9,7 +9,7 @@ import { Room } from './types';
 @Injectable()
 export class SocketsService {
 
-  constructor(@InjectRedis() private redis: Redis){}
+  constructor(@InjectRedis() private readonly redis: Redis){}
   
   async createRoom(socket: Socket) {
     const room : Room = {
