@@ -1,4 +1,3 @@
-import { entities } from "./db.entities";
 
 export const config = () => ({
     database: {
@@ -8,7 +7,7 @@ export const config = () => ({
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE,
-        entities,
+        autoLoadEntities: true,
         synchronize: true,
     },
     jwtSecret: process.env.JWT_SECRET,
