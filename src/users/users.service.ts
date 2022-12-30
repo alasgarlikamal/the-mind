@@ -3,6 +3,7 @@ import {
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
+  ForbiddenException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AvatarsService } from 'src/avatars/avatars.service';
@@ -50,6 +51,18 @@ export class UsersService {
       throw new NotFoundException(`User with email ${email} was not found`);
 
     return user;
+  }
+
+
+  async validateUsername(username: string) {
+    if(username.length === 0){
+      throw new ForbiddenException('Username is empty');
+    }
+    const user = await this.usersRepository.findOneBy({username});
+    if(!user){
+      return true;
+    }
+    return false;
   }
 
   async getUserInfo(user: User) {
