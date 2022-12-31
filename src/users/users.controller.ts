@@ -13,6 +13,7 @@ import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -93,8 +94,15 @@ export class UsersController {
     return this.usersService.remove(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('validate/:username')
   async validateUsername(@Param('username') username: string) {
     return await this.usersService.validateUsername(username);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('username/new')
+  async updateUsername(@GetUser() user: User, @Body() updateUsernameDto: UpdateUsernameDto) {
+    return await this.usersService.updateUsername(user, updateUsernameDto);
   }
 }
