@@ -101,7 +101,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('username/new')
+  @Patch('username')
   async updateUsername(@GetUser() user: User, @Body() updateUsernameDto: UpdateUsernameDto) {
     return await this.usersService.updateUsername(user, updateUsernameDto);
   }
