@@ -35,6 +35,11 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     try {
       const user = await this.usersService.findOneByEmail(loginDto.email);
+
+      if (!user.isActive) {
+        throw new ForbiddenException('User is not active');
+      }
+
       const isMatch = await bcrypt.compare(loginDto.password, user.password);
 
       if (!isMatch) {
@@ -55,11 +60,13 @@ export class AuthService {
 
       const confirmToken = await this.createMailConfirmToken(user);
 
-      return await this.mailService.sendEmailConfirmationMail({
-        email: user.email,
-        firstName: user.firstname,
-        token: confirmToken.token,
-      });
+      return {message: 'success'}
+
+      // return await this.mailService.sendEmailConfirmationMail({
+      //   email: user.email,
+      //   firstName: user.firstname,
+      //   token: confirmToken.token,
+      // });
     } catch (error) {
       throw error;
     }
