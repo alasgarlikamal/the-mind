@@ -13,6 +13,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 import * as bcrypt from 'bcrypt';
+import { UpdateUsernameDto } from './dto/update-username.dto';
 
 @Injectable()
 export class UsersService {
@@ -85,6 +86,14 @@ export class UsersService {
     const userFound = await this.findOneByEmail(user.email);
 
     Object.assign(userFound, updateUserDto);
+
+    return await this.usersRepository.save(userFound);
+  }
+
+  async updateUsername(user: User, updateUsernameDto: UpdateUsernameDto) {
+    const userFound = await this.findOneByEmail(user.email);
+
+    Object.assign(userFound, updateUsernameDto);
 
     return await this.usersRepository.save(userFound);
   }
