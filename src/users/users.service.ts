@@ -92,6 +92,10 @@ export class UsersService {
 
   async updateUsername(user: User, updateUsernameDto: UpdateUsernameDto) {
     const userFound = await this.findOneByEmail(user.email);
+    
+    if(!await this.validateUsername(updateUsernameDto.username)){
+      throw new ForbiddenException('Username is already taken');
+    }
 
     Object.assign(userFound, updateUsernameDto);
 
