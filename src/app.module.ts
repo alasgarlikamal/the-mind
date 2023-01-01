@@ -11,6 +11,9 @@ import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { SocketsModule } from './sockets/sockets.module';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
+
 
 
 @Module({
@@ -40,10 +43,20 @@ import { join } from 'path';
   ServeStaticModule.forRoot({
     rootPath: join(__dirname, '..', 'public'),
   }),
+  RedisModule.forRootAsync({
+    imports: [ConfigModule],
+    useFactory: (configService: ConfigService) => {
+      return {
+        config: configService.get('redis')
+      };
+    },
+    inject: [ConfigService]
+  }),
   UsersModule,
   AuthModule,
   AvatarsModule,
   AboutModule,
+  SocketsModule,
   MailModule],
   controllers: [],
   providers: [],

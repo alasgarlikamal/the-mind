@@ -167,4 +167,17 @@ export class AuthService {
       { password: confirmationToken.password },
     );
   }
+
+  async validateWs(token: string) {
+
+    try {
+      await this.jwtService.verifyAsync(token)
+      const data = this.jwtService.decode(token);
+      console.log(data);
+      return true;
+      
+    } catch (error) {
+      return false;
+    }
+  }
 }
