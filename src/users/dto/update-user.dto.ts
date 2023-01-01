@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsDateString,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -38,4 +39,11 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsNotEmpty()
   gender?: Boolean;
+
+  @ApiProperty({ description: 'User avatar id', example: 1 })
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsNumber()
+  avatarId?: number;
 }

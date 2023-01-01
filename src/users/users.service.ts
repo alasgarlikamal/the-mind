@@ -85,6 +85,11 @@ export class UsersService {
   async updateUserInfo(user: User, updateUserDto: UpdateUserDto) {
     const userFound = await this.findOneByEmail(user.email);
 
+    if (updateUserDto.avatarId){
+      const avatar = await this.avatarsService.findOne(updateUserDto.avatarId);
+      Object.assign(userFound, {avatar});
+    }
+
     Object.assign(userFound, updateUserDto);
 
     return await this.usersRepository.save(userFound);
