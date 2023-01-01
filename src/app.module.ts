@@ -9,6 +9,8 @@ import { AvatarsModule } from './avatars/avatars.module';
 import { AboutModule } from './about/about.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 
 @Module({
@@ -34,6 +36,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
       },
     }),
     inject: [ConfigService]
+  }),
+  ServeStaticModule.forRoot({
+    rootPath: join(__dirname, '..', 'public'),
   }),
   UsersModule,
   AuthModule,
