@@ -180,4 +180,16 @@ export class AuthService {
       return false;
     }
   }
+
+  async extractUser(token: string) {
+
+    try {
+      const data = this.jwtService.decode(token);
+      const user = await this.usersService.findOneByEmail(data['email']);
+      return user;
+      
+    } catch (error) {
+      return null;
+    }
+  }
 }
