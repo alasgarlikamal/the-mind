@@ -1,13 +1,14 @@
 export type Room = {
     id: string;
-    admin: string;
-    joinedPlayers: string[];
-    readyPlayers: string[];
+    admin: Player;
+    joinedPlayers: Player[];
+    readyPlayers: Player[];
+    kickedPlayers: Player[];
 }
 
 export type Game = {
     id: string;
-    roomId: string;
+    players: Player[];
     levelCount: number;
     currentLevel: number;
     lives: number;
@@ -17,10 +18,13 @@ export type Game = {
 }
 
 export type Player = {
-    id: string;
+    socketId: string;
+    username: string;
+    image: string;
     roomId: string;
-    gameId: string;
     currentCards: number[];
     done: boolean;
     points: number;
+    isReady: boolean;
+    isAdmin: boolean;
 }
