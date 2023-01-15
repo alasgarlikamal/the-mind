@@ -19,9 +19,8 @@ export class SocketsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('player/:playerId/room')
-    async getRoomByPlayerId(@Param('playerId') playerId: string) {
-        return await this.socketsService.getRoomByPlayerId(playerId);
+    @Get('player/:playerUsername/room')
+    async getRoomByPlayerId(@Param('playerUsername') playerUsername: string) {
+        return await this.socketsService.getRoomByPlayerUsername(playerUsername);
     }
-
 }
