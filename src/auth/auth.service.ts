@@ -186,6 +186,7 @@ export class AuthService {
     try {
       const data = this.jwtService.decode(token);
       const user = await this.usersService.findOneByEmail(data['email']);
+      delete user.password;
       return user;
       
     } catch (error) {
