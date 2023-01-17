@@ -60,13 +60,11 @@ export class AuthService {
 
       const confirmToken = await this.createMailConfirmToken(user);
 
-      return {message: 'success'}
-
-      // return await this.mailService.sendEmailConfirmationMail({
-      //   email: user.email,
-      //   firstName: user.firstname,
-      //   token: confirmToken.token,
-      // });
+      return await this.mailService.sendEmailConfirmationMail({
+        email: user.email,
+        firstName: user.firstname,
+        token: confirmToken.token,
+      });
     } catch (error) {
       throw error;
     }
@@ -91,9 +89,8 @@ export class AuthService {
       throw new BadRequestException('Could not confirm user');
 
     const options = { token, user: confirmationToken.user } as unknown;
-    const deleteResult: DeleteResult = await this.confirmMailTokenRepository.delete(
-      options,
-    );
+    const deleteResult: DeleteResult =
+      await this.confirmMailTokenRepository.delete(options);
     if (deleteResult && deleteResult.affected === 0)
       throw new BadRequestException('Could not delete confirmation token.');
 
@@ -150,12 +147,14 @@ export class AuthService {
   }
 
   async confirmPassword(token: string) {
-    const confirmationToken = await this.confirmPasswordTokenRepository.findOne({
-      where: { token },
-      relations: {
-        user: true,
+    const confirmationToken = await this.confirmPasswordTokenRepository.findOne(
+      {
+        where: { token },
+        relations: {
+          user: true,
+        },
       },
-    });
+    );
     if (!confirmationToken)
       throw new NotFoundException('Confirmation token is not found');
     const userFound = await this.usersService.findOneByEmail(
