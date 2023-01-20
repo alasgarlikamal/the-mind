@@ -17,13 +17,18 @@ export class SocketsGateway implements OnGatewayDisconnect, OnGatewayConnection{
       return;
     } 
 
-    const reconnection = await this.socketsService.checkForReconnection(socket);
-    console.log(reconnection);
+    const lobbyReconnection = await this.socketsService.checkForLobbyReconnection(socket);
 
-    if(reconnection){
-      socket.join(reconnection.roomId);
-      socket.to(reconnection.roomId).emit('reconnected');
-      this.server.to(socket.id).emit('reconnected');
+    if(lobbyReconnection){
+      socket.join(lobbyReconnection.roomId);
+      this.server.to(lobbyReconnection.roomId).emit('lobbyReconnect');
+    }
+
+    const gameReconnection = await this.socketsService.checkForGameReconnection(socket);
+
+    if(gameReconnection){
+      socket.join(gameReconnection.gameId);
+      this.server.to(gameReconnection.gameId).emit('gameReconnect');
     }
 
     console.log(`Server: Connected to id: ${socket.id}`);
@@ -85,5 +90,95 @@ export class SocketsGateway implements OnGatewayDisconnect, OnGatewayConnection{
     if(!startGame.status) return this.server.to(socket.id).emit('gameNotStarted', {message: startGame.message});
     return this.server.to(roomDto.roomId).emit('gameStarted');
   }
+
+  @SubscribeMessage('getCards')
+  async getCards(@ConnectedSocket() socket: Socket) {
+    const cards = await this.socketsService.getCards(socket);
+    return this.server.to(socket.id).emit('cards', cards);
+  }
+
+  @SubscribeMessage('getGameData')
+  async getGameData(@ConnectedSocket() socket: Socket) {
+
+    const gameData = await this.socketsService.getGameData(socket);
+    console.log('getting data')
+    return this.server.to(socket.id).emit('gameData', gameData);
+  }
+
+
+  @SubscribeMessage('playCard')
+  async playCard(@ConnectedSocket() socket: Socket, @MessageBody() body: any) {
+    console.log(body, 'here')
+    const playCard = await this.socketsService.playCard(socket, body.card);
+    console.log(playCard, 'here')
+
+    if (playCard.reason){
+      return this.server.to(playCard.roomId).emit(playCard.reason, { message: playCard.message, status: playCard.status});
+    }
+
+  }
+
+  @SubscribeMessage('voteKickPlayerStart')
+  async voteKickPlayer(@ConnectedSocket() socket: Socket, @MessageBody() body: any) {
+
+    const voteKickPlayer = await this.socketsService.handleVoteKickStart(socket, body.username);
+
+    const roomId = voteKickPlayer.roomId;
+
+    return this.server.to(roomId).emit('voteKickPlayerStarted', voteKickPlayer);
+  }
+
+  @SubscribeMessage('voteKickPlayer')
+  async voteKickPlayerVote(@ConnectedSocket() socket: Socket, @MessageBody() body: any) {
+    const voteKickPlayer = await this.socketsService.handleVoteKick(socket, body);
+
+    const roomId = voteKickPlayer.roomId;
+
+    if (voteKickPlayer.status){
+      const sockets = await this.server.in(roomId).fetchSockets();
+      const kickedSocket = sockets.find(s => s.id === voteKickPlayer.kickedPlayer.socketId);
+      kickedSocket.leave(roomId)
+      this.server.to(kickedSocket.id).emit('kicked');
+      return this.server.to(roomId).emit('playerKicked', {message: voteKickPlayer.message, status: voteKickPlayer.status});
+    }else{
+      return this.server.to(roomId).emit('voteCounted', voteKickPlayer);
+    }
+
+  }
+
+  @SubscribeMessage('throwingStarVoteStart')
+  async throwingStarVoteStart(@ConnectedSocket() socket: Socket) {
+    console.log('vote started')
+    const throwingStarVote = await this.socketsService.handleThrowingstarVoteStart(socket);
+
+    if (throwingStarVote.status){
+      return this.server.to(throwingStarVote.roomId).emit('throwingStarVoteStarted', throwingStarVote);
+    }
+  }
+
+  @SubscribeMessage('throwingStarVote')
+  async throwingStarVote(@ConnectedSocket() socket: Socket, @MessageBody() body: any) {
+    const throwingStarVote = await this.socketsService.handleThrowingstarVote(socket, body.vote);
+
+    if (!throwingStarVote.status){
+      return this.server.to(throwingStarVote.roomId).emit('throwingStarVoteCounted', throwingStarVote.data);
+    }else{
+      return this.server.to(throwingStarVote.roomId).emit(throwingStarVote.reason, {message: throwingStarVote.message, status: throwingStarVote.status});
+    }
+  }
+
+  @SubscribeMessage('leaveGame')
+  async leaveGame(@ConnectedSocket() socket: Socket) {
+    const leaveGame = await this.socketsService.leaveGame(socket);
+    if (!leaveGame.status){
+      socket.leave(leaveGame.roomId);
+      return this.server.to(leaveGame.roomId).emit('playerLeft', {message: leaveGame.message, status: leaveGame.status});
+    }
+
+    if (leaveGame.status){
+      return this.server.to(leaveGame.roomId).emit('gameOver', {message: leaveGame.message, status: leaveGame.status});
+    }
+  }
+
 }
  
