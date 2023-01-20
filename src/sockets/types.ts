@@ -28,3 +28,19 @@ export type Player = {
     isReady: boolean;
     isAdmin: boolean;
 }
+
+export type VoteKick = {
+    yes: number;
+    no: number;
+    startedBy: string;
+    kickPlayer: string;
+    players: string[];
+}
+
+export type ThrowingstarVote = {
+    gameId: string;
+    yes: number;
+    no: number;
+    startedBy: string;
+    players: string[];
+}
