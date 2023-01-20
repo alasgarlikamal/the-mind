@@ -14,6 +14,7 @@ import { User } from './entities/user.entity';
 
 import * as bcrypt from 'bcrypt';
 import { UpdateUsernameDto } from './dto/update-username.dto';
+import { Game, Player } from 'src/sockets/types';
 
 @Injectable()
 export class UsersService {
@@ -104,6 +105,16 @@ export class UsersService {
 
     Object.assign(userFound, updateUsernameDto);
 
+    return await this.usersRepository.save(userFound);
+  }
+
+  async updatePlayerStats(player: Player, game: Game) {
+    const userFound = await this.usersRepository.findOne({where: { username: player.username }, relations: ['avatar']});    
+
+    Object.assign(userFound, {
+      elo: userFound.elo + player.points, 
+      gamesPlayed: userFound.number_of_games_played + 1,
+      maxLevelReached: Math.max(userFound.max_level_reached, game.currentLevel), });
     return await this.usersRepository.save(userFound);
   }
 
