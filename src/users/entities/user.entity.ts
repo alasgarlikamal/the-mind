@@ -44,13 +44,13 @@ export class User {
   gender: Boolean;
 
   @Column({ type: 'int', default: 0 })
-  number_of_games_played: Number;
+  number_of_games_played: number;
 
   @Column({ type: 'int', default: 0 })
-  max_level_reached: Number;
+  max_level_reached: number;
 
   @Column({ type: 'int', default: 300 })
-  elo: Number;
+  elo: number;
 
   @ManyToOne(() => Avatar, (avatar) => avatar.users)
   @JoinColumn()
