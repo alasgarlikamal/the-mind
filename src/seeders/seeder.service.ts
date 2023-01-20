@@ -45,7 +45,7 @@ export class SeederService {
             {
                 fullName: "Arif Abdullayev", 
                 role:"Frontend Developer, Security manager", 
-                text:"ReactJs, CloudFlare, Splunk"
+                text:"ReactJs, CloudFlare"
             },
             {
                 fullName: "Nijat Abdullazada", 
