@@ -12,7 +12,7 @@ export class AboutService {
     constructor(@InjectRepository(About) private aboutRepository: Repository<About>) {}
 
     async findAll() {
-        const data = await this.aboutRepository.find();
+        const data = await this.aboutRepository.find({relations: ['avatar']});
         if(data.length === 0) throw new NotFoundException('About page not found');
         return data;
     }
