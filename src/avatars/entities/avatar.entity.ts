@@ -16,4 +16,7 @@ export class Avatar {
   @OneToOne(() => About)
   about: About;
 
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
 }
