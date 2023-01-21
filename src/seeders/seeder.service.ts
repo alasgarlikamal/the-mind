@@ -21,40 +21,6 @@ export class SeederService {
 
         await queryRunner.connect();
 
-        await queryRunner.query('TRUNCATE TABLE about');
-
-        await queryRunner.manager.createQueryBuilder()
-        .insert()
-        .into(About)
-        .values([
-            {
-                fullName: "Murad Isayev", 
-                role:"UI/UX, Backend Developer", 
-                text:"Figma, NestJs",
-            },
-            {
-                fullName: "Amina Ismayilzada", 
-                role:"Backend Developer", 
-                text:"NestJs, MySQL"
-            },
-            {
-                fullName: "Kamal Alasgarli", 
-                role:"Team Lead, Backend Developer", 
-                text:"NestJs, Redis"
-            },
-            {
-                fullName: "Arif Abdullayev", 
-                role:"Frontend Developer, Security manager", 
-                text:"ReactJs, CloudFlare"
-            },
-            {
-                fullName: "Nijat Abdullazada", 
-                role:"Frontend Developer", 
-                text:"ReactJs"
-            }
-        ])
-        .execute();
-
         await queryRunner.query('SET FOREIGN_KEY_CHECKS = 0;');
         await queryRunner.query('TRUNCATE TABLE avatars;');
         await queryRunner.query('SET FOREIGN_KEY_CHECKS = 1;');
@@ -63,6 +29,11 @@ export class SeederService {
         .insert()
         .into(Avatar)
         .values([
+            { imageUrl: '/images/avatars/kamal.jpg', isActive: false },
+            { imageUrl: '/images/avatars/murad.jpg', isActive: false },
+            { imageUrl: '/images/avatars/amina.jpg', isActive: false },
+            { imageUrl: '/images/avatars/nicat.jpg', isActive: false },
+            { imageUrl: '/images/avatars/arif.jpg', isActive: false },
             { imageUrl: '/images/avatars/elsa.png' },
             { imageUrl: '/images/avatars/french.png' },
             { imageUrl: '/images/avatars/harry.png' },
@@ -77,6 +48,47 @@ export class SeederService {
             
         ])
         .execute();
+
+        await queryRunner.query('TRUNCATE TABLE about');
+
+        await queryRunner.manager.createQueryBuilder()
+        .insert()
+        .into(About)
+        .values([
+            {
+                fullName: "Murad Isayev", 
+                role:"UI/UX, Backend Developer", 
+                text:"Figma, NestJs",
+                avatar: await this.avatarsService.findOne(2)
+            },
+            {
+                fullName: "Amina Ismayilzada", 
+                role:"Backend Developer", 
+                text:"NestJs, MySQL",
+                avatar: await this.avatarsService.findOne(3)
+            },
+            {
+                fullName: "Kamal Alasgarli", 
+                role:"Team Lead, Backend Developer", 
+                text:"NestJs, Redis",
+                avatar: await this.avatarsService.findOne(1)
+            },
+            {
+                fullName: "Arif Abdullayev", 
+                role:"Frontend Developer, Security manager", 
+                text:"ReactJs, CloudFlare",
+                avatar: await this.avatarsService.findOne(5)
+            },
+            {
+                fullName: "Nijat Abdullazada", 
+                role:"Frontend Developer", 
+                text:"ReactJs",
+                avatar: await this.avatarsService.findOne(4)
+            }
+        ])
+        .execute();
+
+        
 
         await queryRunner.release();
     } 
