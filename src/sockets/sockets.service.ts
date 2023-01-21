@@ -123,7 +123,7 @@ export class SocketsService {
 
   async setRoom (room: Room) {
     try {
-      await this.redis.setex(`room:${room.id}`, 600, JSON.stringify(room));
+      await this.redis.setex(`room:${room.id}`, 7200, JSON.stringify(room));
       
     } catch (error) {
       throw new Error('Error saving the room');
@@ -165,7 +165,7 @@ export class SocketsService {
         await this.setPlayer(currentPlayer);
       }));
       
-      await this.redis.setex(`game:${game.id}`, 600, JSON.stringify(game));
+      await this.redis.setex(`game:${game.id}`, 7200, JSON.stringify(game));
       
     } catch (error) {
       throw new Error('Error saving the game');
@@ -174,7 +174,7 @@ export class SocketsService {
 
   async updateGame (game: Game) {
     try {
-      await this.redis.setex(`game:${game.id}`, 600, JSON.stringify(game));
+      await this.redis.setex(`game:${game.id}`, 7200, JSON.stringify(game));
 
     } catch (error) {
       throw new Error('Error saving the game');
@@ -200,7 +200,7 @@ export class SocketsService {
 
   async setPlayer (player: Player) {
     try {
-      await this.redis.setex(`player:${player.username}`, 600, JSON.stringify(player));
+      await this.redis.setex(`player:${player.username}`, 7200, JSON.stringify(player));
       
     } catch (error) {
       throw new Error('Error saving the player');
@@ -534,7 +534,7 @@ export class SocketsService {
 
   async setVotekick(voteKick: VoteKick){
     try {
-      await this.redis.setex(`votekick:${voteKick.kickPlayer}`, 600, JSON.stringify(voteKick));
+      await this.redis.setex(`votekick:${voteKick.kickPlayer}`, 60, JSON.stringify(voteKick));
       
     } catch (error) {
       throw new Error('Error saving votekick');
@@ -544,7 +544,7 @@ export class SocketsService {
   async updateVotekick(voteKick: VoteKick){
     try {
       await this.redis.del(`votekick:${voteKick.kickPlayer}`);
-      await this.redis.set(`votekick:${voteKick.kickPlayer}`, JSON.stringify(voteKick));
+      await this.redis.setex(`votekick:${voteKick.kickPlayer}`, 60, JSON.stringify(voteKick));
     } catch (error) {
       throw new Error('Error updating votekick');
     }
@@ -561,7 +561,7 @@ export class SocketsService {
 
   async setThrowingStarVote(throwingstarVote: ThrowingstarVote){
     try {
-      await this.redis.setex(`throwingstarvote:${throwingstarVote.gameId}`, 600, JSON.stringify(throwingstarVote));
+      await this.redis.setex(`throwingstarvote:${throwingstarVote.gameId}`, 60, JSON.stringify(throwingstarVote));
 
     } catch (error) {
       throw new Error('Error saving throwingstarvote');
@@ -571,7 +571,7 @@ export class SocketsService {
   async updateThrowingStarVote(throwingstarVote: ThrowingstarVote){
     try {
       await this.redis.del(`throwingstarvote:${throwingstarVote.gameId}`);
-      await this.redis.set(`throwingstarvote:${throwingstarVote.gameId}`, JSON.stringify(throwingstarVote));
+      await this.redis.setex(`throwingstarvote:${throwingstarVote.gameId}`, 60, JSON.stringify(throwingstarVote));
     } catch (error) {
       throw new Error('Error updating throwingstarvote');
     }
