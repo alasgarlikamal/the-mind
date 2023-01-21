@@ -60,11 +60,13 @@ export class AuthService {
 
       const confirmToken = await this.createMailConfirmToken(user);
 
-      return await this.mailService.sendEmailConfirmationMail({
+      const mail = await this.mailService.sendEmailConfirmationMail({
         email: user.email,
         firstName: user.firstname,
         token: confirmToken.token,
       });
+      console.log('here', mail)
+      return mail;
     } catch (error) {
       throw error;
     }
