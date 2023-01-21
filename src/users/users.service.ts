@@ -15,6 +15,8 @@ import { User } from './entities/user.entity';
 import { UpdateUsernameDto } from './dto/update-username.dto';
 import { Game, Player } from 'src/sockets/types';
 
+import { uniqueNamesGenerator, adjectives, colors, animals, NumberDictionary } from 'unique-names-generator';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -34,9 +36,17 @@ export class UsersService {
         `User with email ${createUserDto.email} is already registered`,
       );
 
+    const numberDictionary = NumberDictionary.generate({ min: 100, max: 9999 });
+    const username = uniqueNamesGenerator({
+      dictionaries: [adjectives, animals, numberDictionary],
+      length: 3,
+      separator: '',
+      style: 'capital',
+    });
+    
     const user = this.usersRepository.create({
       ...createUserDto,
-      username: createUserDto.email,
+      username,
       avatar,
     });
 
