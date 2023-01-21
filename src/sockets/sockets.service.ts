@@ -246,7 +246,7 @@ export class SocketsService {
     const user = await this.authService.extractUser(socket.handshake.auth.token);
 
     if (!user) return null;
-    
+
     const player = await this.getPlayer(user.username);
 
     if (player) {
@@ -514,14 +514,15 @@ export class SocketsService {
   async endGame(game: Game) {
 
     await Promise.all(game.players.map(async p => {
-      await this.usersService.updatePlayerStats(p, game);
+      const data = await this.usersService.updatePlayerStats(p, game);
+      console.log(data)
     }));
 
     await Promise.all(game.players.map(async p => {
       await this.redis.expire(`player:${p.username}`, 10);
     }))
 
-    await this.redis.del(`game:${game.id}`);
+    await this.redis.expire(`game:${game.id}`, 10);
 
   }
 
