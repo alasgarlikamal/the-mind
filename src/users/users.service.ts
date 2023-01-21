@@ -12,7 +12,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
-import * as bcrypt from 'bcrypt';
 import { UpdateUsernameDto } from './dto/update-username.dto';
 import { Game, Player } from 'src/sockets/types';
 
@@ -71,17 +70,6 @@ export class UsersService {
     return await this.findOneByEmail(user.email);
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
 
   async updateUserInfo(user: User, updateUserDto: UpdateUserDto) {
     const userFound = await this.findOneByEmail(user.email);
@@ -117,9 +105,5 @@ export class UsersService {
       max_level_reached: Math.max(userFound.max_level_reached, game.currentLevel), });
     console.log(userFound);
     return await this.usersRepository.save(userFound);
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
