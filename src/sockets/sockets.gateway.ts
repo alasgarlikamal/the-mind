@@ -101,7 +101,6 @@ export class SocketsGateway implements OnGatewayDisconnect, OnGatewayConnection{
   async getGameData(@ConnectedSocket() socket: Socket) {
 
     const gameData = await this.socketsService.getGameData(socket);
-    console.log('getting data')
     return this.server.to(socket.id).emit('gameData', gameData);
   }
 
