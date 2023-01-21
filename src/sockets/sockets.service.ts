@@ -222,6 +222,8 @@ export class SocketsService {
   async checkForLobbyReconnection (socket: Socket) {
 
     const user = await this.authService.extractUser(socket.handshake.auth.token);
+
+    if (!user) return null;
     const player = await this.getPlayer(user.username);
 
     if (player) {
@@ -242,6 +244,9 @@ export class SocketsService {
   async checkForGameReconnection (socket: Socket) {
 
     const user = await this.authService.extractUser(socket.handshake.auth.token);
+
+    if (!user) return null;
+    
     const player = await this.getPlayer(user.username);
 
     if (player) {
