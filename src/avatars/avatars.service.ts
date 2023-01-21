@@ -10,7 +10,7 @@ export class AvatarsService {
   constructor(@InjectRepository(Avatar) private repo: Repository<Avatar>) {}
 
   async findAll() {
-    const avatars = await this.repo.find();
+    const avatars = await this.repo.find({where: {isActive: true}});
     if (avatars.length === 0) throw new NotFoundException('Avatars not found');
     return avatars;
   }
