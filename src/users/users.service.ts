@@ -113,8 +113,9 @@ export class UsersService {
 
     Object.assign(userFound, {
       elo: userFound.elo + player.points, 
-      gamesPlayed: userFound.number_of_games_played + 1,
-      maxLevelReached: Math.max(userFound.max_level_reached, game.currentLevel), });
+      number_of_games_played: userFound.number_of_games_played + 1,
+      max_level_reached: Math.max(userFound.max_level_reached, game.currentLevel), });
+    console.log(userFound);
     return await this.usersRepository.save(userFound);
   }
 
