@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Redirect } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -21,6 +22,7 @@ import { JwtAuthGuard } from './jwt-auth-guard';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly configService: ConfigService,
     private usersService: UsersService,
   ) {}
 
@@ -66,10 +68,11 @@ export class AuthController {
     description: 'Failed to confirm the email address',
   })
   @ApiParam({ name: 'token' })
+  @Redirect()
   async confirmEmail(@Param('token') token: string) {
     try {
       await this.authService.confirmMail(token);
-      return 'success!';
+      return { url: this.configService.get('frontEndUrl') + 'auth' };
     } catch (error) {
       throw error;
     }
@@ -103,10 +106,11 @@ export class AuthController {
     description: 'Failed to change the email address',
   })
   @ApiParam({ name: 'token' })
+  @Redirect()
   async confirmPassword(@Param('token') token: string) {
     try {
       await this.authService.confirmPassword(token);
-      return 'Reset Password success!';
+      return { url: this.configService.get('frontEndUrl') + 'settings' };
     } catch (error) {
       throw error;
     }
