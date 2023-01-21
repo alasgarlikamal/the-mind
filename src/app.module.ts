@@ -9,39 +9,18 @@ import { AvatarsModule } from './avatars/avatars.module';
 import { AboutModule } from './about/about.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { ServeStaticModule } from '@nestjs/serve-static';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { SocketsModule } from './sockets/sockets.module';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 
 
-
 @Module({
   imports: [
-    ConfigModule.forRoot({
+  ConfigModule.forRoot({
     isGlobal: true,
     load: [config],
-    envFilePath: `.env.${process.env.NODE_ENV}`
-  }),
-  TypeOrmModule.forRootAsync({
-    imports: [ConfigModule],
-    useClass: DatabaseConfig
-  }),
-  MailerModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => ({
-      transport: {
-        host: configService.get("mailHost"),
-        auth: {
-          user: configService.get("mailUser"),
-          pass: configService.get("mailPassword")
-        }
-      },
-    }),
-    inject: [ConfigService]
-  }),
-  ServeStaticModule.forRoot({
-    rootPath: join(__dirname, '..', 'public'),
+    envFilePath: `.env.${process.env.NODE_ENV}`,
   }),
   RedisModule.forRootAsync({
     imports: [ConfigModule],
@@ -57,8 +36,31 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
   AvatarsModule,
   AboutModule,
   SocketsModule,
-  MailModule],
-  controllers: [],
-  providers: [],
+  MailModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: DatabaseConfig,
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('mailHost'),
+          auth: {
+            user: configService.get('mailUser'),
+            pass: configService.get('mailPassword'),
+          },
+        },
+        template: {
+          dir: join(__dirname, '../src/templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
+      }),
+      inject: [ConfigService],
+    }),
+  ]
 })
 export class AppModule {}
