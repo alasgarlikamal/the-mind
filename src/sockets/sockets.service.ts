@@ -628,9 +628,19 @@ export class SocketsService {
         p.currentCards = p.currentCards.filter(c => c !== smallestCard);
       })
 
-      await this.updateGame(game);
-      await this.savePlayers(game);
-      await this.redis.del(`throwingstarvote:${game.id}`)
+      if (game.players.every(p => p.currentCards.length === 0) && game.currentLevel === game.levelCount) {
+        await this.updateGame(game);
+        await this.savePlayers(game);
+        await this.redis.del(`throwingstarvote:${game.id}`)
+        await this.endGame(game);
+        return {status: true, reason: 'win', message: 'You win', roomId: player.roomId};
+      }
+
+      if (game.players.every(p => p.currentCards.length === 0) && game.currentLevel !== game.levelCount) {
+        await this.nextLevel(game);
+        return {status: true, reason:'nextLevel', message: `Proceeding to level ${game.currentLevel} `, roomId: player.roomId};
+      }
+
       return {status: true, reason: 'throwingStarUsed', message: 'Throwing star used',roomId: player.roomId};
     }    
 

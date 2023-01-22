@@ -159,9 +159,11 @@ export class SocketsGateway implements OnGatewayDisconnect, OnGatewayConnection{
   async throwingStarVote(@ConnectedSocket() socket: Socket, @MessageBody() body: any) {
     const throwingStarVote = await this.socketsService.handleThrowingstarVote(socket, body.vote);
 
+
     if (!throwingStarVote.status){
       return this.server.to(throwingStarVote.roomId).emit('throwingStarVoteCounted', throwingStarVote.data);
     }else{
+      console.log('here')
       return this.server.to(throwingStarVote.roomId).emit(throwingStarVote.reason, {message: throwingStarVote.message, status: throwingStarVote.status});
     }
   }
