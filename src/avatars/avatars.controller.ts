@@ -3,6 +3,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Post,
 } from '@nestjs/common';
 import { ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { AvatarsService } from './avatars.service';
@@ -38,5 +39,14 @@ export class AvatarsController {
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.avatarsService.findOne(id);
+  }
+
+  @Post('seed')
+  @ApiOkResponse({ 
+    status: 201, 
+    description: 'Successfully seeded all avatars.'
+  })
+  async seedAvatars(){
+    return await this.avatarsService.seedAvatars();
   }
 }
