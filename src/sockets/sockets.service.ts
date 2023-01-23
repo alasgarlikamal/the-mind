@@ -396,7 +396,6 @@ export class SocketsService {
   async playCard(socket: Socket, card: number) {
     const user = await this.authService.extractUser(socket.handshake.auth.token);
     const player = await this.getPlayer(user.username);
-    console.log(player, 'before removing')
     if (player.currentCards.find(c => c < card)){
       return {status: false, message: 'That card is not your smallest card'};
     }
@@ -404,7 +403,6 @@ export class SocketsService {
     const game = await this.getGame(player.roomId);
 
     player.currentCards = player.currentCards.filter(c => c !== card);
-    console.log(player, 'after removing')
 
     if (player.currentCards.length === 0) {
       player.done = true;
@@ -620,7 +618,7 @@ export class SocketsService {
 
     throwingStarVote.players.push(player.username);
 
-    if (throwingStarVote.players.length >= game.players.length && throwingStarVote.yes > throwingStarVote.no) {
+    if (throwingStarVote.players.length > game.players.length/2 && throwingStarVote.yes > throwingStarVote.no) {
       game.throwingStarCount--;
 
       game.players.forEach(p => {
@@ -633,20 +631,25 @@ export class SocketsService {
         await this.savePlayers(game);
         await this.redis.del(`throwingstarvote:${game.id}`)
         await this.endGame(game);
+        console.log('win')
         return {status: true, reason: 'win', message: 'You win', roomId: player.roomId};
       }
 
       if (game.players.every(p => p.currentCards.length === 0) && game.currentLevel !== game.levelCount) {
         await this.nextLevel(game);
+        console.log('nextlevel')
         return {status: true, reason:'nextLevel', message: `Proceeding to level ${game.currentLevel} `, roomId: player.roomId};
       }
 
+      await this.savePlayers(game);
+      await this.updateGame(game);
+      console.log('used')
       return {status: true, reason: 'throwingStarUsed', message: 'Throwing star used',roomId: player.roomId};
     }    
-
     await this.updateThrowingStarVote(throwingStarVote);
 
     return {status: false, data: throwingStarVote, roomId: player.roomId};
+
   }
 
   async handleVoteKickStart(socket: Socket, username: string) {
