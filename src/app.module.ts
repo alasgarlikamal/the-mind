@@ -14,29 +14,27 @@ import { join } from 'path';
 import { SocketsModule } from './sockets/sockets.module';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 
-
 @Module({
   imports: [
-  ConfigModule.forRoot({
-    isGlobal: true,
-    load: [config],
-    envFilePath: `.env.${process.env.NODE_ENV}`,
-  }),
-  RedisModule.forRootAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => {
-      return {
-        config: configService.get('redis')
-      };
-    },
-    inject: [ConfigService]
-  }),
-  UsersModule,
-  AuthModule,
-  AvatarsModule,
-  AboutModule,
-  SocketsModule,
-  MailModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config],
+    }),
+    RedisModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        return {
+          config: configService.get('redis'),
+        };
+      },
+      inject: [ConfigService],
+    }),
+    UsersModule,
+    AuthModule,
+    AvatarsModule,
+    AboutModule,
+    SocketsModule,
+    MailModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: DatabaseConfig,
@@ -61,6 +59,6 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
       }),
       inject: [ConfigService],
     }),
-  ]
+  ],
 })
 export class AppModule {}

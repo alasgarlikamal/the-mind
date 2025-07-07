@@ -60,13 +60,13 @@ export class AuthService {
 
       const confirmToken = await this.createMailConfirmToken(user);
 
-      const mail = await this.mailService.sendEmailConfirmationMail({
+      await this.mailService.sendEmailConfirmationMail({
         email: user.email,
         firstName: user.firstname,
         token: confirmToken.token,
       });
-      console.log('here', mail)
-      return mail;
+
+      return 'success';
     } catch (error) {
       throw error;
     }
@@ -170,26 +170,22 @@ export class AuthService {
   }
 
   async validateWs(token: string) {
-
     try {
-      await this.jwtService.verifyAsync(token)
+      await this.jwtService.verifyAsync(token);
       const data = this.jwtService.decode(token);
       console.log(data);
       return true;
-      
     } catch (error) {
       return false;
     }
   }
 
   async extractUser(token: string) {
-
     try {
       const data = this.jwtService.decode(token);
       const user = await this.usersService.findOneByEmail(data['email']);
       delete user.password;
       return user;
-      
     } catch (error) {
       return null;
     }

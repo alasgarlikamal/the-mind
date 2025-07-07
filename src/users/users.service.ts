@@ -3,7 +3,7 @@ import {
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
-  ForbiddenException
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AvatarsService } from 'src/avatars/avatars.service';
@@ -15,7 +15,13 @@ import { User } from './entities/user.entity';
 import { UpdateUsernameDto } from './dto/update-username.dto';
 import { Game, Player } from 'src/sockets/types';
 
-import { uniqueNamesGenerator, adjectives, colors, animals, NumberDictionary } from 'unique-names-generator';
+import {
+  uniqueNamesGenerator,
+  adjectives,
+  colors,
+  animals,
+  NumberDictionary,
+} from 'unique-names-generator';
 
 @Injectable()
 export class UsersService {
@@ -43,11 +49,12 @@ export class UsersService {
       separator: '',
       style: 'capital',
     });
-    
+
     const user = this.usersRepository.create({
       ...createUserDto,
       username,
       avatar,
+      isActive: true,
     });
 
     if (!user) throw new BadRequestException('User could not be created');
@@ -56,7 +63,10 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string) {
-    const user = await this.usersRepository.findOne({where: { email }, relations: ['avatar']});
+    const user = await this.usersRepository.findOne({
+      where: { email },
+      relations: ['avatar'],
+    });
 
     if (!user)
       throw new NotFoundException(`User with email ${email} was not found`);
@@ -64,13 +74,12 @@ export class UsersService {
     return user;
   }
 
-
   async validateUsername(username: string) {
-    if(username.length === 0){
+    if (username.length === 0) {
       throw new ForbiddenException('Username is empty');
     }
-    const user = await this.usersRepository.findOneBy({username});
-    if(!user){
+    const user = await this.usersRepository.findOneBy({ username });
+    if (!user) {
       return true;
     }
     return false;
@@ -80,13 +89,12 @@ export class UsersService {
     return await this.findOneByEmail(user.email);
   }
 
-
   async updateUserInfo(user: User, updateUserDto: UpdateUserDto) {
     const userFound = await this.findOneByEmail(user.email);
 
-    if (updateUserDto.avatarId){
+    if (updateUserDto.avatarId) {
       const avatar = await this.avatarsService.findOne(updateUserDto.avatarId);
-      Object.assign(userFound, {avatar});
+      Object.assign(userFound, { avatar });
     }
 
     Object.assign(userFound, updateUserDto);
@@ -96,8 +104,8 @@ export class UsersService {
 
   async updateUsername(user: User, updateUsernameDto: UpdateUsernameDto) {
     const userFound = await this.findOneByEmail(user.email);
-    
-    if(!await this.validateUsername(updateUsernameDto.username)){
+
+    if (!(await this.validateUsername(updateUsernameDto.username))) {
       throw new ForbiddenException('Username is already taken');
     }
 
@@ -107,12 +115,19 @@ export class UsersService {
   }
 
   async updatePlayerStats(player: Player, game: Game) {
-    const userFound = await this.usersRepository.findOne({where: { username: player.username }, relations: ['avatar']});    
+    const userFound = await this.usersRepository.findOne({
+      where: { username: player.username },
+      relations: ['avatar'],
+    });
 
     Object.assign(userFound, {
-      elo: userFound.elo + player.points, 
+      elo: userFound.elo + player.points,
       number_of_games_played: userFound.number_of_games_played + 1,
-      max_level_reached: Math.max(userFound.max_level_reached, game.currentLevel), });
+      max_level_reached: Math.max(
+        userFound.max_level_reached,
+        game.currentLevel,
+      ),
+    });
     console.log(userFound);
     return await this.usersRepository.save(userFound);
   }

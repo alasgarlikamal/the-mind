@@ -1,41 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { CreateConfirmMailDto } from './dto/createConfirmMail.dto';
-import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
-  constructor(
-    private readonly mailerService: MailerService,
-    private readonly configService: ConfigService,
-  ) {}
+  constructor(private readonly configService: ConfigService) {
+    this.resend = new Resend(this.configService.get('resendApiKey'));
+  }
+
+  private resend: Resend;
 
   async sendEmailConfirmationMail(createConfirmMailDto: CreateConfirmMailDto) {
     const email_url =
       this.configService.get('emailConfirmUrl') + createConfirmMailDto.token;
-    return await this.mailerService.sendMail({
-      to: createConfirmMailDto.email,
+
+    return await this.resend.emails.send({
       from: this.configService.get('mailFrom'),
+      to: createConfirmMailDto.email,
       subject: 'Email confirmation',
-      template: 'email',
-      context: {
-        email_name: createConfirmMailDto.firstName,
-        email_url,
-      },
+
+      html: `<p>Hello ${createConfirmMailDto.firstName},</p>
+             <p>Please confirm your email by clicking the link below:</p>
+             <a href="${email_url}">Confirm Email</a>`,
     });
   }
   async sendResetPasswordMail(createConfirmMailDto: CreateConfirmMailDto) {
     const password_url =
       this.configService.get('passwordConfirmUrl') + createConfirmMailDto.token;
-    return await this.mailerService.sendMail({
-      to: createConfirmMailDto.email,
+
+    return await this.resend.emails.send({
       from: this.configService.get('mailFrom'),
+      to: createConfirmMailDto.email,
       subject: 'Reset password',
-      template: 'password',
-      context: {
-        password_name: createConfirmMailDto.firstName,
-        password_url,
-      },
+      html: `<p>Hello ${createConfirmMailDto.firstName},</p>
+             <p>Please reset your password by clicking the link below:</p>
+             <a href="${password_url}">Reset Password</a>`,
     });
   }
 }
