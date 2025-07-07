@@ -15,6 +15,7 @@ export const config = () => ({
     port: parseInt(process.env.REDIS_PORT) || 6379,
     user: process.env.REDIS_USER,
     password: process.env.REDIS_PASSWORD,
+    family: 0,
   },
 
   jwtSecret: process.env.JWT_SECRET,
